@@ -5,7 +5,7 @@ license: MIT
 compatibility: Works with Claude Code, OpenAI Codex, Cursor, GitHub Copilot, and other agentskills.io-compatible agents. Supports React and Next.js projects. JavaScript codebases are migrated to TypeScript automatically — output is always TypeScript. Other stacks trigger guided redirection.
 metadata:
   author: vibe-to-prod
-  version: "6.6.0"
+  version: "6.6.1"
   framework: 18-dimension-handoff
 ---
 
