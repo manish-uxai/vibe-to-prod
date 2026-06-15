@@ -5,7 +5,7 @@ license: MIT
 compatibility: Works with Claude Code, OpenAI Codex, Cursor, GitHub Copilot, and other agentskills.io-compatible agents. Supports React and Next.js projects. JavaScript codebases are migrated to TypeScript automatically — output is always TypeScript. Other stacks trigger guided redirection.
 metadata:
   author: vibe-to-prod
-  version: "6.0.0"
+  version: "6.1.0"
   framework: 18-dimension-handoff
 ---
 
@@ -571,7 +571,7 @@ Output format must follow [references/audit-checklist.md](references/audit-check
 
 **Audit rules:**
 
-0. **Create a task list first, then work through it.** Before anything else, create a tracked todo list of the audit phases and tick each off as you complete it. This is the audit's completion anchor — the runs that tracked tasks didn't skip steps; the runs that dove in without a plan are the ones that forgot to write design.md or shortchanged the orphan pass. The phases: (1) pre-flight (node, npm install, build, npm audit), (2) reachability script for orphans, (3) grep evidence pack across dimensions, (4) tsc/depcheck tooling, (5) deep-read highest-risk files, (6) write design.md + guidelines.md, (7) compile report. Tick each only when actually done.
+0. **Create a task list first, then work through it.** Before anything else, create a tracked todo list of the audit phases and tick each off as you complete it. This is the audit's completion anchor — the runs that tracked tasks didn't skip steps; the runs that dove in without a plan are the ones that forgot to write design.md or shortchanged the orphan pass. The phases: (1) pre-flight (node, npm install, build, npm audit), (2) reachability script for orphans (the shipped one, not improvised), (3) grep evidence pack across dimensions, (4) tsc/depcheck tooling, (5) deep-read highest-risk files, (6) reconcile findings against the orphan list (drop any finding in an orphaned file), (7) write design.md + guidelines.md, (8) compile report. Tick each only when actually done.
 
 1. **Read before judging.** Before running any grep patterns, spend 2 minutes mapping the project: what is it for, what stack, what conventions are already in place? This prevents false positives — you won't flag JSDoc as a problem if you first understand it's a JS codebase by design.
 
@@ -613,13 +613,15 @@ Output format must follow [references/audit-checklist.md](references/audit-check
 
 9. **Dimension 8 requires active scanning.** Search for reinvented primitives using the grep patterns in audit-checklist.md. If no scan was performed, mark as unevaluated — not passing.
 
-10. **Run the reachability script ONCE for orphan detection — do not grep by hand.** Designers vibecode many screen variants; Figma Make exports generate a file for every screen. Orphaned variants are normal — but hand-grepping finds them unreliably (the same codebase returned 8, 24, and 57 orphans across test runs depending on which files the agent happened to check). **Run the script in `references/reachability.md`** — it walks the real import graph from the entry point (including `export...from`, dynamic `import()`, and `React.lazy`) and returns the complete, identical orphan list every time.
+10. **Run the reachability script ONCE for orphan detection — do not grep by hand, do not write your own.** Designers vibecode many screen variants; Figma Make exports generate a file for every screen. Orphaned variants are normal — but hand-grepping finds them unreliably (the same codebase returned 8, 24, and 57 orphans across test runs depending on which files the agent happened to check). **Copy the script from `references/reachability.md` and run it verbatim** — do NOT improvise a quick inline `node -e` version. The shipped script handles cases an improvised one misses: `export...from` re-exports, dynamic `import()`, and `React.lazy(() => import())`. A simpler hand-written script will mark lazy-loaded files (like route-split tab components) as false orphans — exactly the bug that produces an over-inclusive list. The shipped script also returns the **two buckets** (app/variant orphans vs ui/ library primitives) that the rest of the audit depends on. If you find yourself writing import-resolution logic, stop — that logic already exists in the reference file; use it.
 
     The script splits results into two buckets that MUST be treated differently:
     - **App/variant orphans** (outside `ui/`): unused screen variants and Figma artifacts. List these in the dedicated "Orphaned files (skip for refactoring)" report section; safe to flag for deletion.
     - **ui/ library primitives** (e.g. `carousel.tsx`, `calendar.tsx`): unused shadcn/Radix components that are a _library_, not dead exploration. Note separately and neutrally. NEVER flag for deletion or refactoring — the designer may use them next week.
 
     The "Orphaned files" section must be complete — the fix-it-all reads it to know what to skip, which is what prevents wasted credits splitting dead god-components. If the script fails to run, fall back to per-file grep but state in the report that the orphan list may be incomplete.
+
+    **Reconcile findings against the orphan list before compiling the report.** The orphan list is authoritative. After the reachability pass, re-check every finding you've gathered: if a finding points at a file on the orphan list, it is NOT a live finding — the code isn't reachable, so the bug can't fire. Drop it from the dimension findings, or if you mention it, explicitly mark it "in orphaned file `X` — not reachable, skip." A finding and the orphan list must never contradict each other. The classic failure: flagging an XSS or `window.confirm` in `PreSDCOutcomesTab.tsx` as a live High-severity issue while the same file sits in the orphan list — that sends the fix-it-all to patch dead code. If a file is orphaned, every finding in it is moot. (If you believe a finding IS live, that means the file is NOT actually orphaned — re-check the reachability output; the file may be lazy-loaded and the script missed it, which is itself a signal you used an improvised script instead of the shipped one.)
 
 11. **Real-data resilience coverage (dimension 10).** Run null-access and fixed-width greps across ALL components. Deep-read the highest-risk flagged candidates, capped at 8. Report how many were flagged vs deep-read — never report "passed" on a small sample.
 
@@ -676,7 +678,8 @@ Output format must follow [references/audit-checklist.md](references/audit-check
     - Every finding pairs a technical term with a plain consequence
     - Security and design-system findings are in full clear prose, not compressed
     - The summary table covers all 18 dimensions; detailed findings appear below it
-    - The reachability pass ran and the "Orphaned files" section is present and complete (every flagged god-component was checked for importers — a large file with zero importers must be listed as orphaned, not as a god-component to split)
+    - The reachability pass ran (using the shipped script, not an improvised one) and the "Orphaned files" section is present and complete (every flagged god-component was checked for importers — a large file with zero importers must be listed as orphaned, not as a god-component to split)
+    - No finding contradicts the orphan list — no file is both flagged for a live fix AND listed as orphaned. If any finding points at an orphaned file, it was dropped or re-marked "in orphaned file — skip."
     - The designer summary contains no untranslated jargon
 
 20. **End with a two-path choice.** After the designer summary, offer exactly two ways forward — no menu of individual tasks:
