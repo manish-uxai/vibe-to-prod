@@ -39,7 +39,7 @@ Audit Progress:
 - [ ] 13. Code Quality (TOP-TIER) — TypeScript only: tsconfig present + strict; zero any types, no @ts-ignore/as any, strict interfaces, organized imports, no dead code, consistent patterns
 - [ ] 14. Error Boundaries & Component Resilience — route-level error boundaries; PLUS every data-consuming component handles loading, error, and empty states
 - [ ] 15. Dependency, Environment & Onboarding — no unused deps (run depcheck), pinned versions, .env.example present, README has install+run instructions
-- [ ] 16. File Hygiene & Icons — no orphans (run reachability script), unused imports, dead code; raw/inline SVGs (esp. from Figma MCP) replaced with real library icons
+- [ ] 16. File Hygiene & Icons — no orphans (run `npx madge --orphans`, see reachability.md; confirm with inverse-grep before any deletion), unused imports, dead code; raw/inline SVGs (esp. from Figma MCP) replaced with real library icons
 - [ ] 17. Security Basics — no hardcoded secrets, no dangerouslySetInnerHTML with unsanitized data, npm audit clean, .env not committed
 - [ ] 18. Design Quality — no AI-slop (decorative accent borders, one-off colors), all colors mapped to tokens, severity separate from metric color in charts
 
@@ -224,6 +224,14 @@ grep -RInE 'empty|no data|no results|isError|hasError' src/components --include=
 grep -RInE 'setTimeout|new Promise\(.*setTimeout' src/app/components --include='*.tsx' | head -20
 
 # === DIMENSION 15 & 16: HYGIENE ===
+
+# Orphan detection — madge does real TS resolution (reads tsconfig, resolves @/ aliases),
+# so it doesn't false-flag live files the way a hand-rolled walk does. See reachability.md.
+npx madge --orphans --extensions ts,tsx src 2>&1
+# Post-process: drop entry points (main.tsx), leave /ui/ primitives alone (they're a library),
+# app/variant orphans are deletion candidates — but CONFIRM each with inverse-grep before deleting:
+#   grep -rn "ComponentName" src/ --include='*.tsx' --include='*.ts'   # one importer = NOT an orphan, keep it
+# If a deletion breaks the build: git checkout -- <file> to restore. NEVER stub it back empty.
 
 # Unused dependencies
 npx depcheck --skip-missing 2>/dev/null

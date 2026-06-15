@@ -1,8 +1,10 @@
 # vibe-to-prod
 
-**Turn your vibe-coded prototype into production-ready code your developer can actually ship.**
+**Your design is a set of decisions. This makes them survive the handoff.**
 
-You designed something great — in Figma Make, with an AI agent, or by hand. Now it needs to become real software. vibe-to-prod hardens your prototype into clean, typed, production-ready React so a developer can plug in real data and ship it, instead of rebuilding your UI from scratch.
+Every button, color, layout, and interaction you designed is a decision you made after real research. Traditionally that work gets rebuilt by a developer — lossily, from a description — and the parts that don't translate get guessed at. Vibecoding finally lets you put those decisions into working code. The only catch: vibecoded code is too messy for a developer to use, so teams give up and go back to static screens.
+
+vibe-to-prod is the bridge. It hardens your vibecoded prototype into clean, typed, production-ready React a developer actually accepts — your design fully preserved — so they plug in real data and ship it instead of rebuilding your UI from scratch. You own the UI end to end; they focus on making it work.
 
 No terminal expertise required. You talk to your AI agent in plain English; the skill does the rest.
 
@@ -23,7 +25,7 @@ vibe-to-prod takes the UI you've already built and makes it production-grade:
 - **Checks 18 production dimensions** — security, error & empty states, routing, design tokens, design quality, and more
 - **Hands off cleanly** — your developer opens the project and starts integrating immediately
 
-The result: weeks of developer rebuild time saved.
+The result: your developer skips the UI rebuild — often weeks of it — and starts on real functionality day one, working from your decisions instead of guessing at them.
 
 ---
 

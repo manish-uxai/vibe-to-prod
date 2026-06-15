@@ -1,23 +1,29 @@
 ---
 name: vibe-to-prod
-description: Transforms high-fidelity designer-built React or Next.js prototypes into production-ready codebases. Detects the project stack and adapts automatically. The output is clean, production-survivable code — not a documentation package. Use this skill when a designer wants to make their vibe-coded UI production-ready, when someone says "make this dev-ready", "clean up my prototype", "prep for integration", "vibe to prod", or any mention of turning a coded prototype into something a developer can ship.
+description: Hardens a designer's vibecoded React or Next.js prototype into code a developer actually accepts — preserving every design decision (layout, color, interaction, navigation) so the designer's work survives into production instead of being rebuilt from scratch. The design stays untouched; the code becomes shippable. Detects the project stack and adapts automatically. Output is clean, production-survivable TypeScript — not a documentation package. Use this skill when a designer wants to make their vibe-coded UI production-ready, when someone says "make this dev-ready", "clean up my prototype", "prep for integration", "vibe to prod", or any mention of turning a coded prototype into something a developer can ship.
 license: MIT
 compatibility: Works with Claude Code, OpenAI Codex, Cursor, GitHub Copilot, and other agentskills.io-compatible agents. Supports React and Next.js projects. JavaScript codebases are migrated to TypeScript automatically — output is always TypeScript. Other stacks trigger guided redirection.
 metadata:
   author: vibe-to-prod
-  version: "6.3.0"
+  version: "6.6.0"
   framework: 18-dimension-handoff
 ---
 
 # Philosophy
 
-Traditional handoff is broken. A designer spends weeks building a polished, high-fidelity prototype in code. Then they hand over a Figma file or screenshots. The frontend developer spends another 1–2 months rebuilding the exact same UI from scratch. Fidelity degrades. Micro-interactions get lost. Time is wasted twice.
+**A design is a set of decisions, not a set of screens.** Every button, color, layout, interaction, and navigation path is a decision the designer made after real research. The problem with traditional handoff is that those decisions live only in the designer's head — and handoff is the designer trying to transmit their head into a developer's, screen by screen, across sessions and docs. Whatever doesn't transmit, the developer guesses. And the guesses break the product, because they aren't backed by the research the designer did.
 
-**We break this cycle entirely.**
+Vibecoding solves the transmission problem: the decisions are now _in the code_, not in a doc someone has to decode. But it creates a new one — vibecoded code is messy, so developers can't use it, so most teams retreat to static screens and the lossy old handoff. **This skill is the missing bridge.** It hardens a vibecoded prototype into code a developer actually accepts — every design decision preserved, the design untouched — so the decisions survive into production instead of being lost in translation.
 
-The designer-builder has already developed the final production UI. Your job is to harden the code so it survives real data, real users, and real edge cases — then a developer opens the project and starts integrating APIs immediately. **1–2 months of UI development saved.**
+**What this changes:**
 
-**The output is production-ready code, not a documentation package.** No separate contract files. No lists of what was changed. The code itself is the deliverable — clean enough that a developer can read it and understand everything they need.
+- **The designer owns the UI end to end.** They define every screen and interaction _and_ deliver it as code the team ships — not a mockup that gets rebuilt.
+- **The developer does real engineering.** They should be making the UI _work_ — wiring real data, building logic, shipping — not rebuilding it from a designer's description. This takes the _wrong_ work off their plate, not work they're incapable of.
+- **Vibecoding becomes safe to hand off.** The reason teams abandoned vibecoding — "it's too messy for devs" — is the exact thing this fixes.
+
+**The honest scope:** this preserves and hardens whatever the designer built. It doesn't fix unsound design decisions and can't supply research the designer didn't do — it elevates good design work; it doesn't manufacture it. And it doesn't do anything a developer with an agent couldn't technically do themselves. The value is _who_ does it and _when_: the designer, who knows the intent, before handoff — producing a more correct result than a developer's agent guessing at intent it doesn't have, in one standardized shape the team agreed to accept.
+
+**The output is production-ready code, not a documentation package.** No separate contract files, no lists of what changed. The code itself is the deliverable — clean enough that a developer reads it and understands everything they need. The design survives intact: same screens, same colors, same layout, logo and all.
 
 ---
 
@@ -199,6 +205,7 @@ When the developer connects real APIs, they change only the function body inside
 
 - Isolate stateful logic from presentational components.
 - Break god-components (400+ lines) into focused child modules.
+- **Split by relocation, never by slicing:** move whole self-contained units (sub-components, helpers, types) to new files via exact-match edits — create with the verbatim body + `export`, delete the original by full-block exact match, add the import. NEVER carve file regions with regex, `sed` line-ranges, or Python string surgery; that's where splits corrupt. One unit at a time, build after each. (Full method in the round-two section.)
 - **DOM Hierarchy Guard:** Preserve the exact DOM layout hierarchy when splitting. No redundant wrappers or altered CSS display properties.
 - **Circular dependency check:** Scan for components importing each other in a loop. Circular imports break builds and cause subtle bugs. Common in vibe-coded prototypes where the AI generates imports without considering the dependency graph. In audit mode, flag any circular chain found.
 - **Absolute path aliases:** Enforce `@/*` path mapping across the codebase. No `../../` relative imports — they break when files move and make the codebase harder to navigate. Configure in `tsconfig.json` (TS) or `jsconfig.json` (JS) and `vite.config.ts`. In audit mode, flag any import using `../..` as a violation.
@@ -733,7 +740,7 @@ This is explicit authorization to fix everything — even if it takes two rounds
 
 1. **Write a progress ledger first.** Before any edits, create `vibe-to-prod-progress.md` at the project root. Top of file, verbatim: "CONTINUOUS FIX-IT-ALL PASS. Do not present a menu. Do not stop on safe work. Resume the next unchecked item automatically." Then list every finding as a checkbox in priority order, tagged [A] or [B]. This is the anti-compaction anchor — on a large codebase the conversation WILL compact, and after compaction you re-read this file to recover both the plan and the no-menu rule. Tick a box ONLY after that item's build/runtime check passes (not when you believe it's done).
 
-2. **Get the orphan list before any edits — run the reachability script.** Designers vibecode many screens and variants; a Figma Make export of 175 files can have 10-20 orphaned variants nobody uses. You MUST identify all of them up front, reliably.
+2. **Get the orphan list before any edits — run the orphan detector (madge).** Designers vibecode many screens and variants; a Figma Make export of 175 files can have 10-20 orphaned variants nobody uses. You MUST identify all of them up front, reliably.
 
    - If the audit already produced an "Orphaned files" section, start from that list.
    - Otherwise (or to confirm), follow `references/reachability.md` — run `npx madge --orphans --extensions ts,tsx src`, which does real TS resolution and returns the complete orphan graph; post-process into the three buckets (drop entry points, leave ui/ primitives, app/variant orphans are deletion candidates). Do not grep by hand or hand-roll a walk; both miss files.
@@ -753,11 +760,35 @@ This is explicit authorization to fix everything — even if it takes two rounds
 
 5. **If the run pauses for length/compaction:** re-read the ledger and resume automatically. Say "Continuing — next is X" and keep going. NEVER present options to resume.
 
-6. **When all Category A is done and verified, hand off to round two with a reflexive prompt.** This is the ONE legitimate stop. It is NOT a menu (not a list, not "if you want, next I'll…"). It's a single clearly-bounded item with a reason, phrased so the designer types "go" reflexively — because they already said fix it all, so continuing is the expected default, not a new decision:
+6. **When all Category A is done and verified, write the round-one summary FIRST, then hand off to round two.** The summary is a required deliverable, not an afterthought — it's the only place the designer experiences the value, since everything else happened in a terminal they weren't watching. Do NOT open with a flat checklist of mechanics ("created api.ts, fixed 12 useState..."). That's engineer-language; the designer feels nothing. Use this structure — lead with what the designer owns (design system, content, resilience), then the developer-facing plumbing, then preservation, then what's left:
 
-   > "Everything's hardened and verified — data layer, types, security, missing states, routing, all done and building clean. One thing left: your [N] largest _in-use_ files need splitting into smaller pieces. That's the riskiest change, so I held it for its own focused pass where I verify each split in the browser as I go. **Say "go" and I'll finish it.**"
+   > ## What changed and what it means
+   >
+   > **Design system:** [what got tokenized — colors/spacing/typography now variables in one file, consolidated from N scattered sources; brand intact, Figma-syncable]. **Content:** [data extracted out of components into editable content files — name what moved]. **Resilience:** [loading, empty, and error states added to the screens that had none — no more blank-screen crashes]. **Handoff plumbing:** [data layer for real APIs, TypeScript enforced, security patched, N unused packages removed, linting + config added].
+   >
+   > Your design is fully preserved — same screens, same look, logo intact. Estimated developer time saved: **[range]**.
+   >
+   > **What landed:** [tight one-line changelog: design tokens · content → data files · loading/empty/error states · data layer + types + context · state hooks → reducer · error boundary · CVEs fixed · N packages removed · TS + ESLint configs · design preserved]
+   >
+   > **Still open — round two:** [the N largest screens are single large files — give the line counts]. They work but are hard to extend. Splitting them is the final step — below.
+
+   **Match every claim to what the run actually did.** If only colors were tokenized (not spacing/typography), say "design tokens consolidated," not "all spacing and typography now variables" — an overclaim the designer can disprove by opening one file destroys trust in the whole summary. Lead with the design-owner concerns because that's what the designer recognizes as theirs; the data layer matters most for the _outcome_, but the design-system and content work is what they _feel_.
+
+6b. **Then hand off to round two with a reflexive prompt.** This is the ONE legitimate stop. It is NOT a menu (not a list, not "if you want, next I'll…"). It's a single clearly-bounded item with a reason, phrased so continuing is the expected default. Make the _case_ — don't just ask permission, because "split a file that works" sounds like make-work unless you say why it matters:
+
+> "**Round two — splitting your [N] biggest screens (the [names], [X] and [Y] lines).** They work perfectly right now — this isn't a bug fix. But each does everything in one file, so when your developer needs to change one, they read the whole thing to find the 20 lines that matter, and every edit risks breaking something unrelated. That's the friction that makes a dev say 'this'll take a while' instead of 'yeah, I can ship this.' Splitting them is the riskiest change (restructuring working code), so I do it as its own pass and verify each screen in the browser. **Say 'go' and I'll finish it.**"
 
 7. **On "go" (round two):** split the god-components one at a time, verifying each in the browser/runtime before the next. **Only split files that passed the reachability scan** — orphaned god-components stay untouched regardless of their size. This is the highest-breakage-risk work — go carefully, never batch it. When done, report and remind the designer to click through their screens.
+
+   **The safe split method — move text, never reconstruct or slice it.** A split is pure relocation: an already-working block moves to a new file unchanged, and the only new code is its `export` and the import that points back. Follow this exactly:
+   - **Read the whole file first.** You cannot safely split what you haven't fully read. Identify _self-contained_ units — a presentational sub-component, a helper, a type — whose complete boundaries you can see and whose dependencies (props, imports, helpers it references) you know.
+   - **Extract ONE unit at a time, build after each.** Never batch extractions — batching is where state gets confused ("did I already wire this one?"), the exact ambiguity that precedes a double-definition or a missed removal. One unit → build → next.
+   - **Each move is three exact-match edits:** (a) create the new file with the unit's body copied _verbatim_ plus `export` plus the imports that unit needs; (b) delete the original definition via an exact-match `str_replace` on the full block (matching the real opening and closing braces); (c) add the import at the top of the shell. If the block is too large to match as one exact string, that's a signal it isn't cleanly self-contained — don't force it.
+   - **NEVER slice file regions with regex, line-ranges, `sed` ranges, or Python string surgery.** This is the single biggest corruption source: one unexpected brace, comment, or nested function and the boundary match is wrong, producing a file that looks plausible but is subtly broken. (A real run used a Python `re.search` DOTALL slice and only avoided corruption by luck, then had to fix a dangling import the slice left behind.)
+   - **Check both sides resolve after each removal.** Before removing a unit, note everything it references and everything that references _it_ — a moved sub-component often used a type or helper that stays behind (the dangling `Message` import bug). Make sure the new file imports what it needs and the shell no longer references what left.
+   - **Split by responsibility, not line count.** Extract the pieces that come out clean — self-contained sub-components, helpers, types — and STOP. Do not force a deeply-entangled core apart just to hit a line target: a sub-component reading six pieces of parent state means threading six props, which is a rewrite, not a move. A 656-line cohesive orchestrating shell is a fine outcome; a "split" that introduced a subtle bug is not. The goal is "a developer can find the piece they need," not "no file exceeds N lines."
+   - **End with a browser check of the split screens specifically.** Build-passing only proves types align — it does not prove the screen still renders or behaves identically. A split can compile and still have dropped a prop, a piece of state, or an effect. Click through the actual screens that were split; confirm identical behavior before declaring done.
+   - **Close with a short plain-language summary.** Don't end on a bare file-count table. One or two sentences in the designer's terms: which screens were split, that they look and behave exactly the same, and that they're now easier for a developer to extend — then the one reminder to click through and confirm. Example: "Your two biggest screens (the presentation flow and stock view) are now broken into focused pieces — same look, same behavior, but a developer can find and change one part without wading through the whole file. Open them in the browser and click through to confirm they feel identical."
 
 **Why round two exists:** not because the agent can't do the work, and not as a menu in disguise — but because splitting huge files is where runtime breaks hide, and doing it as its own verified pass (rather than hastily at the tail of a long, context-degraded run) is what protects the designer's app. The "say go" prompt makes continuing effortless — one reflexive word, not a decision.
 
