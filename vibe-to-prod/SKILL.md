@@ -5,7 +5,7 @@ license: MIT
 compatibility: Works with Claude Code, OpenAI Codex, Cursor, GitHub Copilot, and other agentskills.io-compatible agents. Supports React and Next.js projects. JavaScript codebases are migrated to TypeScript automatically — output is always TypeScript. Other stacks trigger guided redirection.
 metadata:
   author: vibe-to-prod
-  version: "6.1.0"
+  version: "6.3.0"
   framework: 18-dimension-handoff
 ---
 
@@ -406,7 +406,7 @@ The codebase is TypeScript (migrated first if it arrived as JS). Code quality is
 
 ### 16. File Hygiene & Icon Consolidation
 
-- Delete orphaned files, unused imports, dead code.
+- **Delete orphaned files — but only through the two-step safety protocol in `references/reachability.md`.** The orphan detector _flags_ orphan candidates; it does NOT authorize deletion. Before deleting any flagged file, grep the whole `src` tree for imports of it — if even one file imports it, it's a false orphan, so keep it. And if deleting orphans breaks the build, `git checkout --` to restore the misclassified file; NEVER stub a deleted file back as an empty placeholder to make the build pass — that silently destroys real assets (logos, icons). Remove unused imports and dead code as normal.
 - **Icon replacement (lookup first, extract last):**
   1. Find all inline SVGs in JSX components
   2. For each SVG, identify what it represents — use file name, component name, and surrounding code as context if the path is unclear
@@ -571,7 +571,7 @@ Output format must follow [references/audit-checklist.md](references/audit-check
 
 **Audit rules:**
 
-0. **Create a task list first, then work through it.** Before anything else, create a tracked todo list of the audit phases and tick each off as you complete it. This is the audit's completion anchor — the runs that tracked tasks didn't skip steps; the runs that dove in without a plan are the ones that forgot to write design.md or shortchanged the orphan pass. The phases: (1) pre-flight (node, npm install, build, npm audit), (2) reachability script for orphans (the shipped one, not improvised), (3) grep evidence pack across dimensions, (4) tsc/depcheck tooling, (5) deep-read highest-risk files, (6) reconcile findings against the orphan list (drop any finding in an orphaned file), (7) write design.md + guidelines.md, (8) compile report. Tick each only when actually done.
+0. **Create a task list first, then work through it.** Before anything else, create a tracked todo list of the audit phases and tick each off as you complete it. This is the audit's completion anchor — the runs that tracked tasks didn't skip steps; the runs that dove in without a plan are the ones that forgot to write design.md or shortchanged the orphan pass. The phases: (1) pre-flight (node, npm install, build, npm audit), (2) orphan detection with madge (see reachability.md; not a hand-rolled walk), (3) grep evidence pack across dimensions, (4) tsc/depcheck tooling, (5) deep-read highest-risk files, (6) reconcile findings against the orphan list (drop any finding in an orphaned file), (7) write design.md + guidelines.md, (8) compile report. Tick each only when actually done.
 
 1. **Read before judging.** Before running any grep patterns, spend 2 minutes mapping the project: what is it for, what stack, what conventions are already in place? This prevents false positives — you won't flag JSDoc as a problem if you first understand it's a JS codebase by design.
 
@@ -613,10 +613,10 @@ Output format must follow [references/audit-checklist.md](references/audit-check
 
 9. **Dimension 8 requires active scanning.** Search for reinvented primitives using the grep patterns in audit-checklist.md. If no scan was performed, mark as unevaluated — not passing.
 
-10. **Run the reachability script ONCE for orphan detection — do not grep by hand, do not write your own.** Designers vibecode many screen variants; Figma Make exports generate a file for every screen. Orphaned variants are normal — but hand-grepping finds them unreliably (the same codebase returned 8, 24, and 57 orphans across test runs depending on which files the agent happened to check). **Copy the script from `references/reachability.md` and run it verbatim** — do NOT improvise a quick inline `node -e` version. The shipped script handles cases an improvised one misses: `export...from` re-exports, dynamic `import()`, and `React.lazy(() => import())`. A simpler hand-written script will mark lazy-loaded files (like route-split tab components) as false orphans — exactly the bug that produces an over-inclusive list. The shipped script also returns the **two buckets** (app/variant orphans vs ui/ library primitives) that the rest of the audit depends on. If you find yourself writing import-resolution logic, stop — that logic already exists in the reference file; use it.
+10. **Run the orphan detector ONCE — do not grep by hand, do not write your own walk.** Designers vibecode many screen variants; Figma Make exports generate a file for every screen. Orphaned variants are normal — but hand-grepping finds them unreliably (the same codebase returned 8, 24, and 57 orphans across test runs depending on which files the agent happened to check). **Follow `references/reachability.md`**, which uses `npx madge --orphans --extensions ts,tsx src` as the primary detector — madge does real TS module resolution (reads tsconfig, resolves `@/` aliases, follows dynamic imports), so it doesn't produce the false orphans a regex walk does. Do NOT improvise a quick inline `node -e` script — a hand-rolled walk misses live importers and falsely flags their dependencies as orphans (a real run deleted a live logo this way). The reference file also defines the three-bucket post-processing (drop entry points; leave ui/ primitives alone; app/variant orphans are deletion candidates) and the mandatory inverse-grep confirm before any deletion. If madge won't install, the reference has a fallback script — but the inverse-grep safety step is mandatory either way.
 
     The script splits results into two buckets that MUST be treated differently:
-    - **App/variant orphans** (outside `ui/`): unused screen variants and Figma artifacts. List these in the dedicated "Orphaned files (skip for refactoring)" report section; safe to flag for deletion.
+    - **App/variant orphans** (outside `ui/`): unused screen variants and Figma artifacts. List these in the dedicated "Orphaned files (skip for refactoring)" report section. They are deletion _candidates_, not confirmed-safe deletions — actual deletion (in fix-it-all) requires the inverse-grep confirm in `references/reachability.md`, because forward-reachability can produce false orphans.
     - **ui/ library primitives** (e.g. `carousel.tsx`, `calendar.tsx`): unused shadcn/Radix components that are a _library_, not dead exploration. Note separately and neutrally. NEVER flag for deletion or refactoring — the designer may use them next week.
 
     The "Orphaned files" section must be complete — the fix-it-all reads it to know what to skip, which is what prevents wasted credits splitting dead god-components. If the script fails to run, fall back to per-file grep but state in the report that the orphan list may be incomplete.
@@ -678,7 +678,7 @@ Output format must follow [references/audit-checklist.md](references/audit-check
     - Every finding pairs a technical term with a plain consequence
     - Security and design-system findings are in full clear prose, not compressed
     - The summary table covers all 18 dimensions; detailed findings appear below it
-    - The reachability pass ran (using the shipped script, not an improvised one) and the "Orphaned files" section is present and complete (every flagged god-component was checked for importers — a large file with zero importers must be listed as orphaned, not as a god-component to split)
+    - The orphan pass ran (madge, or the documented fallback — not an improvised walk) and the "Orphaned files" section is present and complete (every flagged god-component was checked for importers — a large file with zero importers must be listed as orphaned, not as a god-component to split)
     - No finding contradicts the orphan list — no file is both flagged for a live fix AND listed as orphaned. If any finding points at an orphaned file, it was dropped or re-marked "in orphaned file — skip."
     - The designer summary contains no untranslated jargon
 
@@ -736,10 +736,12 @@ This is explicit authorization to fix everything — even if it takes two rounds
 2. **Get the orphan list before any edits — run the reachability script.** Designers vibecode many screens and variants; a Figma Make export of 175 files can have 10-20 orphaned variants nobody uses. You MUST identify all of them up front, reliably.
 
    - If the audit already produced an "Orphaned files" section, start from that list.
-   - Otherwise (or to confirm), run the script in `references/reachability.md` — it walks the real import graph and returns the complete app/variant orphan list plus the separate ui/ primitive list. Do not grep by hand; it misses files.
+   - Otherwise (or to confirm), follow `references/reachability.md` — run `npx madge --orphans --extensions ts,tsx src`, which does real TS resolution and returns the complete orphan graph; post-process into the three buckets (drop entry points, leave ui/ primitives, app/variant orphans are deletion candidates). Do not grep by hand or hand-roll a walk; both miss files.
    - Mark every app/variant orphan as `SKIP — orphaned` in the ledger.
 
    **Do not edit, refactor, split, fix types in, replace icons in, or do ANY work on an orphaned file** — not in round one, not in round two, regardless of how many findings it has or how large it is. A 2,000-line orphaned god-component is skipped entirely; an orphaned file with an `any` type is skipped entirely. Every edit to a dead file is wasted credits. (The unused ui/ primitives are also left alone — they're a library, not dead code.)
+
+   **If you delete orphans, follow the two-step safety protocol in `references/reachability.md`:** (1) before deleting any flagged file, grep the whole `src` tree for imports of it — one importer means it's a false orphan, keep it; (2) if a deletion breaks the build, `git checkout --` to restore it, never stub it back as an empty placeholder. A detector can miss a live importer and produce a false orphan; deleting it removes code that live components depend on. Restoring is the only correct recovery — a stub silently destroys the designer's real logo/icons behind a passing build.
 
    This is not optional. Build the full orphan list once, before the first edit, and consult it before touching any file. In prior runs, missing this wasted ~20% of the run splitting and editing files that were never imported.
 
