@@ -5,7 +5,7 @@ license: MIT
 compatibility: Works with Claude Code, OpenAI Codex, Cursor, GitHub Copilot, and other agentskills.io-compatible agents. Supports React and Next.js projects. JavaScript codebases are migrated to TypeScript automatically — output is always TypeScript. Other stacks trigger guided redirection.
 metadata:
   author: vibe-to-prod
-  version: "6.6.1"
+  version: "6.7.0"
   framework: 18-dimension-handoff
 ---
 
@@ -13,15 +13,15 @@ metadata:
 
 **A design is a set of decisions, not a set of screens.** Every button, color, layout, interaction, and navigation path is a decision the designer made after real research. The problem with traditional handoff is that those decisions live only in the designer's head — and handoff is the designer trying to transmit their head into a developer's, screen by screen, across sessions and docs. Whatever doesn't transmit, the developer guesses. And the guesses break the product, because they aren't backed by the research the designer did.
 
-Vibecoding solves the transmission problem: the decisions are now _in the code_, not in a doc someone has to decode. But it creates a new one — vibecoded code is messy, so developers can't use it, so most teams retreat to static screens and the lossy old handoff. **This skill is the missing bridge.** It hardens a vibecoded prototype into code a developer actually accepts — every design decision preserved, the design untouched — so the decisions survive into production instead of being lost in translation.
+Vibecoding solves the transmission problem: the decisions are now *in the code*, not in a doc someone has to decode. But it creates a new one — vibecoded code is messy, so developers can't use it, so most teams retreat to static screens and the lossy old handoff. **This skill is the missing bridge.** It hardens a vibecoded prototype into code a developer actually accepts — every design decision preserved, the design untouched — so the decisions survive into production instead of being lost in translation.
 
 **What this changes:**
 
-- **The designer owns the UI end to end.** They define every screen and interaction _and_ deliver it as code the team ships — not a mockup that gets rebuilt.
-- **The developer does real engineering.** They should be making the UI _work_ — wiring real data, building logic, shipping — not rebuilding it from a designer's description. This takes the _wrong_ work off their plate, not work they're incapable of.
+- **The designer owns the UI end to end.** They define every screen and interaction *and* deliver it as code the team ships — not a mockup that gets rebuilt.
+- **The developer does real engineering.** They should be making the UI *work* — wiring real data, building logic, shipping — not rebuilding it from a designer's description. This takes the *wrong* work off their plate, not work they're incapable of.
 - **Vibecoding becomes safe to hand off.** The reason teams abandoned vibecoding — "it's too messy for devs" — is the exact thing this fixes.
 
-**The honest scope:** this preserves and hardens whatever the designer built. It doesn't fix unsound design decisions and can't supply research the designer didn't do — it elevates good design work; it doesn't manufacture it. And it doesn't do anything a developer with an agent couldn't technically do themselves. The value is _who_ does it and _when_: the designer, who knows the intent, before handoff — producing a more correct result than a developer's agent guessing at intent it doesn't have, in one standardized shape the team agreed to accept.
+**The honest scope:** this preserves and hardens whatever the designer built. It doesn't fix unsound design decisions and can't supply research the designer didn't do — it elevates good design work; it doesn't manufacture it. And it doesn't do anything a developer with an agent couldn't technically do themselves. The value is *who* does it and *when*: the designer, who knows the intent, before handoff — producing a more correct result than a developer's agent guessing at intent it doesn't have, in one standardized shape the team agreed to accept.
 
 **The output is production-ready code, not a documentation package.** No separate contract files, no lists of what changed. The code itself is the deliverable — clean enough that a developer reads it and understands everything they need. The design survives intact: same screens, same colors, same layout, logo and all.
 
@@ -33,7 +33,7 @@ Vibecoding solves the transmission problem: the decisions are now _in the code_,
 
 **If it succeeds:** note the version silently and continue to Step 0.
 
-**If it fails:** stop all code operations immediately. Do not attempt npm install, skill installation, scaffolding, or file edits — nothing works without Node, and partial work the designer can't run or test is worse than a clean stop. Tell the designer plainly:
+**If it fails:** stop all code operations immediately. Do not attempt npm install, scaffolding, or file edits — nothing works without Node, and partial work the designer can't run or test is worse than a clean stop. Tell the designer plainly:
 
 > "Node.js isn't installed on your machine yet. It's needed to run React projects and install dependencies. Here's how to set it up:
 >
@@ -63,17 +63,14 @@ If `npm install` fails for any other reason, report the exact error plainly and 
 ---
 
 ## React (with TypeScript) — `.tsx` / `.ts`
-
 Proceed with all 18 dimensions.
 
 ---
 
 ## React (with JavaScript) — `.jsx` / `.js`
-
 **vibe-to-prod always outputs TypeScript.** A JavaScript codebase is migrated to TypeScript as the mandatory first step — this is not optional and the user is not asked. TypeScript is the production-handoff standard: it gives the receiving developer real type contracts, autocomplete, and refactoring safety that JavaScript can't.
 
 Tell the user plainly, then proceed:
-
 > "Your project is in JavaScript. I'll convert it to TypeScript first — this gives your developer proper type safety and makes the handoff cleaner. Then I'll run the full production pass on the TypeScript version."
 
 Read and follow `references/jsx-to-tsx-migration.md` to migrate, THEN run the 18 dimensions on the resulting TypeScript codebase. Because migration happens first, everything downstream is TypeScript — there is no JavaScript path through the dimensions, and PropTypes are never used (TypeScript interfaces replace them entirely).
@@ -81,7 +78,6 @@ Read and follow `references/jsx-to-tsx-migration.md` to migrate, THEN run the 18
 ---
 
 ## Next.js — `next.config.*` present or `next` in `package.json`
-
 Proceed with all 18 dimensions, applying the Next.js overrides listed later in this document. If the Next.js project is in JavaScript, migrate to TypeScript first, same as above.
 
 ---
@@ -91,11 +87,9 @@ Proceed with all 18 dimensions, applying the Next.js overrides listed later in t
 The project isn't React yet, but the UI work has value. vibe-to-prod can convert it to a production-ready Vite + React + TypeScript project — the HTML becomes React components, inline styles become design tokens, and the result goes through the full 18-dimension pass.
 
 Tell the designer:
-
 > "Your project is built with plain HTML and CSS. I'll convert it to a React + TypeScript project first — your visual design stays the same, but it gets proper components, data flow, and production structure. Then I'll run the full production pass so a developer can start integrating immediately."
 
 **Conversion flow:**
-
 1. Scaffold a Vite + React + TypeScript project (Path A from `references/scaffold.md`)
 2. Convert HTML to React — read and follow `references/html-to-react.md`
 3. Run the 18 dimensions on the resulting React codebase
@@ -103,7 +97,6 @@ Tell the designer:
 ---
 
 ## Vue.js, Svelte, Angular, or other frameworks
-
 Do not proceed. Explain:
 
 > "Your project uses [detected framework]. This skill is built around React and Next.js, so running it here would give inaccurate results.
@@ -125,7 +118,6 @@ Keep the precise technical term (it's how a designer learns the vocabulary), but
 - Avoid: "Components don't say what they need." (consequence with no term — designer learns nothing)
 
 **Exceptions — always full, clear prose (never compressed):**
-
 - Security warnings (hardcoded keys, XSS risks)
 - Irreversible or destructive actions
 - Anything design-system or design-related (this is the technical area designers engage with most — explain it fully)
@@ -133,15 +125,15 @@ Keep the precise technical term (it's how a designer learns the vocabulary), but
 **Summary: warm and plain.**
 The end-of-audit summary is the one section written purely for a non-technical reader. No jargon. Covers overall health, the top 3 things to fix, and what it means for handing off to a developer. This is where the translation table applies.
 
-| Technical term (in summary, translate to) | Plain version                                |
-| :---------------------------------------- | :------------------------------------------- |
-| god-component                             | one file doing too many things               |
-| API stubs / data layer                    | where real data will plug in                 |
-| design tokens                             | reusable color and spacing values            |
-| error/empty states                        | what users see when data fails or is missing |
-| PropTypes / types                         | components describing what data they expect  |
-| routing                                   | how the app moves between pages              |
-| hardcoded secret                          | a password or key exposed in the code        |
+| Technical term (in summary, translate to) | Plain version |
+| :--- | :--- |
+| god-component | one file doing too many things |
+| API stubs / data layer | where real data will plug in |
+| design tokens | reusable color and spacing values |
+| error/empty states | what users see when data fails or is missing |
+| PropTypes / types | components describing what data they expect |
+| routing | how the app moves between pages |
+| hardcoded secret | a password or key exposed in the code |
 
 Read the user's messages for cues on how technical to make the summary. If they use "component", "props", "state" correctly, the summary can carry a bit more vocabulary.
 
@@ -151,11 +143,11 @@ Read the user's messages for cues on how technical to make the summary. If they 
 
 Every finding must include a severity level with this definition:
 
-| Severity   | Meaning                                                                                  |
-| :--------- | :--------------------------------------------------------------------------------------- |
-| **High**   | Will break in production, block API integration, or cause data loss. Fix before handoff. |
-| **Medium** | Creates friction for the developer or degrades user experience. Fix soon after handoff.  |
-| **Low**    | Cleanup that improves code quality. Can be addressed over time.                          |
+| Severity | Meaning |
+| :--- | :--- |
+| **High** | Will break in production, block API integration, or cause data loss. Fix before handoff. |
+| **Medium** | Creates friction for the developer or degrades user experience. Fix soon after handoff. |
+| **Low** | Cleanup that improves code quality. Can be addressed over time. |
 
 ---
 
@@ -170,7 +162,6 @@ The **engineering substrate** — how animations are implemented, how state flow
 **When a vibe-coded interaction appears buggy rather than intentional, flag it rather than silently preserving or fixing it.**
 
 **Code-detectable interaction smells (no browser required):**
-
 - Framer Motion springs with `stiffness` > 500 or `damping` < 5 (likely jank)
 - CSS transitions with `0ms` or `0s` durations (likely missing)
 - Hover/focus handlers toggling state without debounce (likely flicker)
@@ -226,12 +217,11 @@ When the developer connects real APIs, they change only the function body inside
 A single file that describes every data entity the UI renders. The codebase is TypeScript (migrated first if it arrived as JS), so this is always strict interfaces — never JSDoc. This is the dimension that prevents the "multiple discussion rounds" problem: when the data shape changes, a developer changes one file, not a parent component plus three children.
 
 Strict interfaces in `domain.ts`:
-
 ```ts
 export interface Patient {
   id: string;
   name: string;
-  status: "active" | "inactive";
+  status: 'active' | 'inactive';
 }
 ```
 
@@ -250,8 +240,8 @@ This is the integration seam — the single place a developer swaps mock data fo
 
 ```ts
 // src/api.ts
-import { MOCK_PATIENTS } from "./data/patients";
-import type { Patient } from "./domain";
+import { MOCK_PATIENTS } from './data/patients';
+import type { Patient } from './domain';
 
 const delay = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -291,7 +281,6 @@ const { patients, loading, error } = usePatientData();
 **Only applies if the app actually has roles or read-only states.** Many prototypes have no concept of permissions — if so, skip this dimension entirely and don't flag its absence as a problem. Check first: does the app distinguish viewer/editor/admin, or have any read-only mode? If not, this dimension is N/A.
 
 If the app does have roles:
-
 - Use the HTML `inert` attribute to block UI interaction for read-only roles (one declaration on a container beats per-element `disabled` props, which silently miss newly-added elements).
 - Define roles as a union type in `domain.ts`.
 
@@ -311,7 +300,6 @@ The developer must be able to open `api.ts` and see every data dependency they n
 The core problem: vibecoding produces duplicate components for the same thing (three different dropdowns, two custom modals) and hand-rolled primitives that a standard library does better and a developer would have to maintain. Don't hand off bespoke UI when a standard exists.
 
 The rule, in priority order:
-
 1. **Reuse what's already in the codebase.** If a component for this purpose already exists, use it — never create a second one that does the same thing. Duplicate components for the same job is the #1 issue to fix here.
 2. **If none exists, import from shadcn/ui (or Radix).** Don't hand-roll a dropdown, modal, tooltip, tabs, popover, date picker, or select menu — these are solved primitives.
 3. **Preserve genuine domain components.** A custom data grid or domain-specific visualization is legitimate; don't replace those.
@@ -339,7 +327,6 @@ Covers **colors, spacing, sizing, typography, and all visual values.** Not just 
 Vibecoding builds the happy path. The designer demos the flow that works and never hits the cases where data is missing, an action is destructive, or something fails — so those cases never get built. This dimension catches what vibecoding structurally omits. A complete UI handles them; a prototype usually doesn't.
 
 **The missing cases:**
-
 - **Destructive actions:** gate all deletions, resets, or irreversible changes behind `ConfirmDialog` or "Toast with Undo." Vibecoded prototypes almost always have a delete button with no confirmation.
 - **Empty states:** every list, table, or data view needs a "no data yet" state — not a blank area or a crash on an empty array.
 - **Error states:** every action that can fail needs a visible failure path — not a silent dead-end.
@@ -347,7 +334,6 @@ Vibecoding builds the happy path. The designer demos the flow that works and nev
 (Loading states are covered in dimension 14. Together, 10 and 14 cover the four cases vibecoding forgets: destructive, empty, error, loading.)
 
 **Real-data resilience (the same omission, applied to data shape):** vibecoding renders the 3 mock items perfectly and never the messy real data. Check that components survive:
-
 - **Null/undefined fields:** renders gracefully when a data field is missing, not crashes (this overlaps dimension 3 — missing fields are usually a type-completeness problem; flag under whichever is clearer)
 - **Text overflow:** long names, descriptions, URLs wrap or truncate, not break the layout
 - **Variable lengths:** works with 0, 1, and 500 items — not just the 3 mock items
@@ -362,7 +348,6 @@ Vibecoding builds the happy path. The designer demos the flow that works and nev
 **First check: is this a single-page or multi-page app?** A single-screen prototype doesn't need routing — skip this dimension, don't flag its absence.
 
 If multi-page:
-
 - Is it already using a router? If yes, leave it (don't force a switch to a different router — that's the dev's choice).
 - If it's switching views with conditional rendering (`if (page === 'home')`) and no router, convert to declarative `react-router-dom` paths. **Read and follow `references/conditional-to-router.md`** — it's a step-by-step recipe for this exact conversion with known pitfalls documented. Do NOT improvise the routing migration; the reference file exists because improvising it causes expensive retries.
 - Lazy-load heavy route containers (`React.lazy`).
@@ -378,7 +363,6 @@ Only flag the narrow real case: a genuinely expensive operation (sorting/filteri
 ### 13. Code Quality (top-tier — non-negotiable)
 
 The codebase is TypeScript (migrated first if it arrived as JS). Code quality is held to a high bar — a developer should open any file and find it clean:
-
 - **Zero `any` types.** Strict, complete interfaces. `any` defeats the entire point of TypeScript.
 - **No `// @ts-ignore` or `as any` escape hatches** — each one hides a real bug.
 - Organized, deduplicated imports. Absolute path aliases (`@/*`), never `../../` chains.
@@ -390,12 +374,10 @@ The codebase is TypeScript (migrated first if it arrived as JS). Code quality is
 ### 14. Error Boundaries & Component Resilience
 
 **Route-level:**
-
 - Wrap major views in React Error Boundaries.
 - Global Toast/Snackbar for async failures.
 
 **Component-level (every data-consuming component must handle):**
-
 - **Loading state:** what the user sees while data loads (skeleton, spinner, or placeholder — not blank space)
 - **Error state:** what happens when the data call fails (fallback message — not a crash)
 - **Empty state:** what appears when there's no data (helpful message — not invisible component)
@@ -413,7 +395,7 @@ The codebase is TypeScript (migrated first if it arrived as JS). Code quality is
 
 ### 16. File Hygiene & Icon Consolidation
 
-- **Delete orphaned files — but only through the two-step safety protocol in `references/reachability.md`.** The orphan detector _flags_ orphan candidates; it does NOT authorize deletion. Before deleting any flagged file, grep the whole `src` tree for imports of it — if even one file imports it, it's a false orphan, so keep it. And if deleting orphans breaks the build, `git checkout --` to restore the misclassified file; NEVER stub a deleted file back as an empty placeholder to make the build pass — that silently destroys real assets (logos, icons). Remove unused imports and dead code as normal.
+- **Delete orphaned files — but only through the two-step safety protocol in `references/reachability.md`.** The orphan detector *flags* orphan candidates; it does NOT authorize deletion. Before deleting any flagged file, grep the whole `src` tree for imports of it — if even one file imports it, it's a false orphan, so keep it. And if deleting orphans breaks the build, `git checkout --` to restore the misclassified file; NEVER stub a deleted file back as an empty placeholder to make the build pass — that silently destroys real assets (logos, icons). Remove unused imports and dead code as normal.
 - **Icon replacement (lookup first, extract last):**
   1. Find all inline SVGs in JSX components
   2. For each SVG, identify what it represents — use file name, component name, and surrounding code as context if the path is unclear
@@ -428,24 +410,20 @@ The codebase is TypeScript (migrated first if it arrived as JS). Code quality is
 Frontend prototypes often contain security holes that get inherited by the developer. Check for:
 
 **Hardcoded secrets:**
-
 - API keys, tokens, or credentials in source code (not just `.env` — check actual JS/TS files)
 - Firebase configs, Stripe keys, auth tokens written directly in code
 - Any string that looks like a key: long alphanumeric strings, strings starting with `sk_`, `pk_`, `AKIA`, `ghp_`
 
 **Dangerous patterns:**
-
 - `dangerouslySetInnerHTML` — XSS risk if used with user-provided data
 - Unvalidated URL parameters used in fetch calls or link hrefs
 - `eval()` or `new Function()` usage
 
 **Committed secrets:**
-
 - `.env` file (not `.env.example`) committed to git — check `.gitignore`
 - Any file containing real API endpoints with keys in query parameters
 
 **Dependency vulnerabilities:**
-
 - Run `npm audit` — flag any high or critical severity vulnerabilities
 
 **In audit mode:** flag any hardcoded secret as High severity — this is a real security risk, not a code quality issue. Flag `dangerouslySetInnerHTML` as Medium unless it's used with sanitized content.
@@ -456,8 +434,7 @@ This is the dimension designers care about most — it protects visual craft, no
 
 **What "AI slop" actually means here — the undifferentiated-default cluster:**
 
-AI slop in UI has a specific signature. None of these is bad alone — they're bad _together_, because together they signal "generic default, no design decision was made":
-
+AI slop in UI has a specific signature. None of these is bad alone — they're bad *together*, because together they signal "generic default, no design decision was made":
 - Inter or Geist as the default sans-serif
 - Blue or indigo as the primary accent with subtle hover states
 - Large rounded corners on every card and button
@@ -467,17 +444,15 @@ AI slop in UI has a specific signature. None of these is bad alone — they're b
 
 The test is NOT "does it use shadcn" — the skill mandates shadcn, and shadcn is good. The test is: **does this UI have an identity, or is it the undifferentiated default?** A project with a real `design.md` driving distinct brand colors, intentional type, and considered spacing uses shadcn AND looks like itself. Slop is shadcn shipped raw with default Inter, default blue, default radii, and no design.md identity applied.
 
-So the check is: does `design.md` define a real identity, and do the components reflect it — or do they fall back to framework defaults? If the design.md exists but components ignore it and use defaults, flag that drift. If there's no identity at all (the default cluster above, all present together), flag it as slop. A single default (just using Inter, say) is fine — flag the _cluster_.
+So the check is: does `design.md` define a real identity, and do the components reflect it — or do they fall back to framework defaults? If the design.md exists but components ignore it and use defaults, flag that drift. If there's no identity at all (the default cluster above, all present together), flag it as slop. A single default (just using Inter, say) is fine — flag the *cluster*.
 
 **Also avoid:**
-
 - Decorative accent borders on cards (thick `border-left`/`border-right` to imply importance) — generic AI-dashboard cliché
 - Random or one-off colors not defined as semantic tokens — every color should map to a token in `:root`
 - Inline `style={{ color: '#…' }}` or ad-hoc hex/rgb in components
 - Turning every data series the same alert color (e.g. all bars red when "critical") — this destroys metric identity
 
 **Prefer:**
-
 - The design.md identity applied consistently — brand colors, type, spacing that are intentional, not default
 - Semantic tokens for everything: `--color-category-*`, `--color-status-*`, `--color-fg-muted`
 - Legends that match what's drawn — color encodes the metric type, severity is a separate visual cue
@@ -485,7 +460,6 @@ So the check is: does `design.md` define a real identity, and do the components 
 
 **Severity vs metric color (important for data viz):**
 Keep two encoding layers separate:
-
 - **Fill color = which metric** (patient = one token, site = another, cost = another)
 - **Ring / badge / icon = severity** (warning or critical outline)
 
@@ -500,67 +474,59 @@ Never recolor an entire chart series red to signal severity — the viewer loses
 When the stack is Next.js, these replace their standard counterparts. All other dimensions apply unchanged.
 
 ### 5. State Management (Next.js)
-
 Same as standard, plus: flag any `useState`, `useContext`, or `useReducer` inside a Server Component. State hooks only work in Client Components — files using them need `"use client"` at the top.
 
 ### 10. Lazy Loading (Next.js)
-
 `React.lazy` not needed. Check heavy components use `dynamic()` from `next/dynamic` with `{ ssr: false }`.
 
 ### 11. Routing & Navigation (Next.js)
-
 `react-router-dom` is irrelevant. Check:
-
 - Pages in `/app` (App Router) or `/pages` (Pages Router)
 - Dynamic routes use `[param]` and `[[...slug]]` conventions
 - Route guards via `middleware.ts`, not `<ProtectedRoute />` wrappers
 - No conditional rendering (`if (page === 'home')`) instead of file-based routes
 
 ### 14. Error Boundaries & Resilience (Next.js)
-
 Check for built-in error files instead of manual Error Boundaries:
-
 - `error.tsx` at appropriate layout levels
 - `not-found.tsx` for 404 handling
 - `loading.tsx` for suspense states
-  Component-level resilience checks (loading/error/empty states) still apply.
+Component-level resilience checks (loading/error/empty states) still apply.
 
 ### 4 & 7. API Stubs & Self-Documenting Data Layer (Next.js)
-
 The `api.ts` stub pattern still applies. Stub names/comments should note whether an endpoint is expected as a Next.js API route (`/app/api/resource/route.ts`) or an external service.
 
 ---
 
 # Common Vibecode Smells
 
-| Smell                                        | Fix                                                                                                                                                 |
-| :------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Reinvented UI primitives**                 | Replace with shadcn/Radix, preserve styling                                                                                                         |
-| **Duplicated component variants**            | Consolidate into one shared primitive                                                                                                               |
-| **Copy-pasted layouts**                      | Extract repeated page sections into shared components                                                                                               |
-| **Direct mock data in components**           | Route all data through `api.ts` stubs                                                                                                               |
-| **Third-party components fetching directly** | Maps, charts fetching their own data — route through API stubs                                                                                      |
-| **No empty/error/loading states**            | Component shows blank or crashes with no data — add fallbacks                                                                                       |
-| **Hardcoded content in components**          | Labels, placeholders baked in — pass as props instead                                                                                               |
-| **Hardcoded visual values**                  | Raw pixels, hex colors in inline styles or arbitrary Tailwind — use design tokens                                                                   |
-| **God-components (400+ lines)**              | Split into container + children, guard the DOM hierarchy                                                                                            |
-| **Cascading useState chains**                | 5+ hooks — consolidate into reducer or context                                                                                                      |
-| **Components crash on null data**            | Add defensive checks for missing fields                                                                                                             |
-| **Fixed widths breaking layout**             | Use relative sizing or constrained max-widths                                                                                                       |
-| **Raw multi-line SVGs in JSX**               | Check lucide-react first, then heroicons/phosphor. Replace with library import if match found. Only extract to custom icon file if no match exists. |
-| **Hardcoded API key in source**              | Move to `.env` and add `.env` to `.gitignore`. Never commit real keys.                                                                              |
-| **dangerouslySetInnerHTML**                  | Replace with safe rendering or sanitize input with DOMPurify.                                                                                       |
-| **No tests exist**                           | A dev inherits no safety net. At minimum configure a test runner and add tests to critical paths.                                                   |
-| **README missing setup instructions**        | A dev can't run the app without asking the designer. Add install + run steps.                                                                       |
-| **Circular imports**                         | Components importing each other in a loop. Breaks builds and causes subtle bugs.                                                                    |
+| Smell | Fix |
+| :--- | :--- |
+| **Reinvented UI primitives** | Replace with shadcn/Radix, preserve styling |
+| **Duplicated component variants** | Consolidate into one shared primitive |
+| **Copy-pasted layouts** | Extract repeated page sections into shared components |
+| **Direct mock data in components** | Route all data through `api.ts` stubs |
+| **Third-party components fetching directly** | Maps, charts fetching their own data — route through API stubs |
+| **No empty/error/loading states** | Component shows blank or crashes with no data — add fallbacks |
+| **Hardcoded content in components** | Labels, placeholders baked in — pass as props instead |
+| **Hardcoded visual values** | Raw pixels, hex colors in inline styles or arbitrary Tailwind — use design tokens |
+| **God-components (400+ lines)** | Split into container + children, guard the DOM hierarchy |
+| **Cascading useState chains** | 5+ hooks — consolidate into reducer or context |
+| **Components crash on null data** | Add defensive checks for missing fields |
+| **Fixed widths breaking layout** | Use relative sizing or constrained max-widths |
+| **Raw multi-line SVGs in JSX** | Check lucide-react first, then heroicons/phosphor. Replace with library import if match found. Only extract to custom icon file if no match exists. |
+| **Hardcoded API key in source** | Move to `.env` and add `.env` to `.gitignore`. Never commit real keys. |
+| **dangerouslySetInnerHTML** | Replace with safe rendering or sanitize input with DOMPurify. |
+| **No tests exist** | A dev inherits no safety net. At minimum configure a test runner and add tests to critical paths. |
+| **README missing setup instructions** | A dev can't run the app without asking the designer. Add install + run steps. |
+| **Circular imports** | Components importing each other in a loop. Breaks builds and causes subtle bugs. |
 
 ---
 
 # Execution Modes
 
 **Routing the command:**
-
-- `/vibe-to-prod start` → start mode (greenfield, installs skills + scaffolds + writes guidelines)
+- `/vibe-to-prod start` → start mode (greenfield: scaffolds + writes guidelines)
 - `/vibe-to-prod scaffold` → scaffold mode (greenfield setup only)
 - `/vibe-to-prod audit` → audit mode (report only, no changes)
 - `/vibe-to-prod refactor` or `/vibe-to-prod` with existing code → refactor mode (default)
@@ -606,11 +572,10 @@ Output format must follow [references/audit-checklist.md](references/audit-check
 6. **Run the grep patterns from audit-checklist.md.** Required, not optional. Include output summaries in the report.
 
 6b. **Run the real tools, don't just grep proxies for them.** The strongest audits ran tools; the weakest hand-grepped. Make the tool the instruction so every model gets the strong result. Run these and report results (run-and-report — if one errors or hangs, note it and move on, never let it block the audit):
-
-- **`npm run build`** — catches what static analysis misses: missing-file imports, broken exports. A failing build is a High finding (the dev can't even run it). The v5.6.0 test caught a build broken by missing data files this way.
-- **`tsc --noEmit`** (once a tsconfig exists; if none exists, that absence is itself the dimension-14 finding) — the real type-safety signal. Report the error count instead of just grepping for `: any`.
-- **`npx depcheck`** — finds unused dependencies and duplicate libraries (e.g. MUI icons shipped alongside lucide). Turns "I think this is unused" into fact for dimension 15.
-- **`npm audit --audit-level=high`** — report the vulnerability count for dimension 17.
+   - **`npm run build`** — catches what static analysis misses: missing-file imports, broken exports. A failing build is a High finding (the dev can't even run it). The v5.6.0 test caught a build broken by missing data files this way.
+   - **`tsc --noEmit`** (once a tsconfig exists; if none exists, that absence is itself the dimension-14 finding) — the real type-safety signal. Report the error count instead of just grepping for `: any`.
+   - **`npx depcheck`** — finds unused dependencies and duplicate libraries (e.g. MUI icons shipped alongside lucide). Turns "I think this is unused" into fact for dimension 15.
+   - **`npm audit --audit-level=high`** — report the vulnerability count for dimension 17.
 
 6c. **Provider-mount / runtime-crash check.** Build passing does NOT mean the app runs — a context provider can be missing while the build stays green. For every context hook the app calls (`useX()` from a `createContext`/`XProvider` pair), verify the matching provider is actually mounted above it in the App/main tree. The classic silent break: a `useAppData()` hook called in a component whose `AppDataProvider` was never mounted — every consumer throws "must be used within AppDataProvider" at runtime while the build passes. (This codebase uses Context API for shared data, not TanStack — so the providers to check are the app's own context providers.) Flag any hook-without-mounted-provider as High. This is the single highest-value runtime catch in the audit.
 
@@ -623,8 +588,8 @@ Output format must follow [references/audit-checklist.md](references/audit-check
 10. **Run the orphan detector ONCE — do not grep by hand, do not write your own walk.** Designers vibecode many screen variants; Figma Make exports generate a file for every screen. Orphaned variants are normal — but hand-grepping finds them unreliably (the same codebase returned 8, 24, and 57 orphans across test runs depending on which files the agent happened to check). **Follow `references/reachability.md`**, which uses `npx madge --orphans --extensions ts,tsx src` as the primary detector — madge does real TS module resolution (reads tsconfig, resolves `@/` aliases, follows dynamic imports), so it doesn't produce the false orphans a regex walk does. Do NOT improvise a quick inline `node -e` script — a hand-rolled walk misses live importers and falsely flags their dependencies as orphans (a real run deleted a live logo this way). The reference file also defines the three-bucket post-processing (drop entry points; leave ui/ primitives alone; app/variant orphans are deletion candidates) and the mandatory inverse-grep confirm before any deletion. If madge won't install, the reference has a fallback script — but the inverse-grep safety step is mandatory either way.
 
     The script splits results into two buckets that MUST be treated differently:
-    - **App/variant orphans** (outside `ui/`): unused screen variants and Figma artifacts. List these in the dedicated "Orphaned files (skip for refactoring)" report section. They are deletion _candidates_, not confirmed-safe deletions — actual deletion (in fix-it-all) requires the inverse-grep confirm in `references/reachability.md`, because forward-reachability can produce false orphans.
-    - **ui/ library primitives** (e.g. `carousel.tsx`, `calendar.tsx`): unused shadcn/Radix components that are a _library_, not dead exploration. Note separately and neutrally. NEVER flag for deletion or refactoring — the designer may use them next week.
+    - **App/variant orphans** (outside `ui/`): unused screen variants and Figma artifacts. List these in the dedicated "Orphaned files (skip for refactoring)" report section. They are deletion *candidates*, not confirmed-safe deletions — actual deletion (in fix-it-all) requires the inverse-grep confirm in `references/reachability.md`, because forward-reachability can produce false orphans.
+    - **ui/ library primitives** (e.g. `carousel.tsx`, `calendar.tsx`): unused shadcn/Radix components that are a *library*, not dead exploration. Note separately and neutrally. NEVER flag for deletion or refactoring — the designer may use them next week.
 
     The "Orphaned files" section must be complete — the fix-it-all reads it to know what to skip, which is what prevents wasted credits splitting dead god-components. If the script fails to run, fall back to per-file grep but state in the report that the orphan list may be incomplete.
 
@@ -642,11 +607,11 @@ Output format must follow [references/audit-checklist.md](references/audit-check
 
     First, a **summary table** covering all 18 dimensions at a glance:
 
-    | #   | Dimension              | Status | Severity |
-    | --- | ---------------------- | ------ | -------- |
-    | 1   | Component Architecture | FAIL   | High     |
-    | 2   | Clean Data Extraction  | PASS   | —        |
-    | ... | ...                    | ...    | ...      |
+    | # | Dimension | Status | Severity |
+    |---|-----------|--------|----------|
+    | 1 | Component Architecture | FAIL | High |
+    | 2 | Clean Data Extraction | PASS | — |
+    | ... | ... | ... | ... |
 
     Status is PASS / PARTIAL / FAIL / N/A, and the distinction matters — some models collapse everything to FAIL, which makes the report useless (a designer reading "everything failed" panics or stops trusting it). Use the grades precisely:
     - **PASS** — the dimension is present and sound. Not perfect, but a developer wouldn't object. (e.g. shadcn used throughout, no hand-rolled primitives.)
@@ -692,7 +657,6 @@ Output format must follow [references/audit-checklist.md](references/audit-check
 20. **End with a two-path choice.** After the designer summary, offer exactly two ways forward — no menu of individual tasks:
 
     > **How would you like to proceed?**
-    >
     > 1. **Fix it all** — say "fix it all" or "let's go" and I'll fix every finding in one continuous pass, then report back when it's done.
     > 2. **Pick specific findings first** — tell me which to start with (e.g. "just the security and data issues") and I'll handle those, then check in about the rest.
 
@@ -713,7 +677,6 @@ Full 18-dimension pass. Refactor while preserving design intent. The self-docume
 **Step zero — TypeScript migration is a HARD GATE (if the codebase is JSX/JS).** This is not a plan item that can be reordered or deferred — it is a blocking precondition. If the codebase is JSX/JS (React but not TypeScript), you MUST complete the full TypeScript migration BEFORE touching any other dimension. Do not fix the data layer, API envelopes, state, bundling, or anything else first. Nothing else happens until migration is done.
 
 Read and follow `references/jsx-to-tsx-migration.md` completely:
-
 - Install TypeScript toolchain (typescript, @types/react, @types/react-dom), create tsconfig.json
 - Rename every `.jsx` → `.tsx` and `.js` → `.ts`
 - Add interfaces for every component's props
@@ -734,7 +697,7 @@ This is explicit authorization to fix everything — even if it takes two rounds
 
 **Category A — deterministic hardening (do ALL of it in one continuous pass, no stops):** TypeScript migration (if needed), data extraction, domain types, API stubs (Context API + setTimeout, no TanStack), state consolidation + provider-mount safety, RBAC (if applicable), self-documenting data layer, component library/reuse, design tokens, the missing cases (destructive/empty/error), routing migration, expensive-ops check, code quality, error boundaries, dependency/env hygiene, file hygiene/icons, production readiness, security, design quality. Every one of these is bounded and safe. Work through them continuously — no "want me to continue?", no task menus, no "what remains" lists.
 
-**Category B — high-risk surgery (the ONE thing that gets its own round):** decomposing god-components (splitting 1,000–2,000 line files into smaller pieces). This is the single riskiest change — most likely to introduce a runtime break, and most dangerous when attempted late in a long run as context degrades. It gets handled as a deliberate, separately-authorized second round. (Note: only the _file-splitting surgery_ is Category B. The rest of dimension 1 — DOM hierarchy, circular deps, aliases, reuse — is Category A and runs in round one.)
+**Category B — high-risk surgery (the ONE thing that gets its own round):** decomposing god-components (splitting 1,000–2,000 line files into smaller pieces). This is the single riskiest change — most likely to introduce a runtime break, and most dangerous when attempted late in a long run as context degrades. It gets handled as a deliberate, separately-authorized second round. (Note: only the *file-splitting surgery* is Category B. The rest of dimension 1 — DOM hierarchy, circular deps, aliases, reuse — is Category A and runs in round one.)
 
 **The flow:**
 
@@ -753,7 +716,6 @@ This is explicit authorization to fix everything — even if it takes two rounds
    This is not optional. Build the full orphan list once, before the first edit, and consult it before touching any file. In prior runs, missing this wasted ~20% of the run splitting and editing files that were never imported.
 
 3. **Announce the plan once, then proceed:**
-
    > "Got it — fixing everything. I'll work through the data layer, types, security, the missing states, routing, and cleanup in one continuous pass, verifying as I go. The one thing I'll hold for a separate step is splitting your largest files — that's the riskiest change and safer done deliberately. Starting now."
 
 4. **Work continuously through all Category A items** in priority order (High → Medium → Low). Narrate progress so the designer can follow without responding: "✓ Data layer and API stubs done. Now adding destructive-action confirmations..." No stops, no menus.
@@ -772,20 +734,19 @@ This is explicit authorization to fix everything — even if it takes two rounds
    >
    > **Still open — round two:** [the N largest screens are single large files — give the line counts]. They work but are hard to extend. Splitting them is the final step — below.
 
-   **Match every claim to what the run actually did.** If only colors were tokenized (not spacing/typography), say "design tokens consolidated," not "all spacing and typography now variables" — an overclaim the designer can disprove by opening one file destroys trust in the whole summary. Lead with the design-owner concerns because that's what the designer recognizes as theirs; the data layer matters most for the _outcome_, but the design-system and content work is what they _feel_.
+   **Match every claim to what the run actually did.** If only colors were tokenized (not spacing/typography), say "design tokens consolidated," not "all spacing and typography now variables" — an overclaim the designer can disprove by opening one file destroys trust in the whole summary. Lead with the design-owner concerns because that's what the designer recognizes as theirs; the data layer matters most for the *outcome*, but the design-system and content work is what they *feel*.
 
-6b. **Then hand off to round two with a reflexive prompt.** This is the ONE legitimate stop. It is NOT a menu (not a list, not "if you want, next I'll…"). It's a single clearly-bounded item with a reason, phrased so continuing is the expected default. Make the _case_ — don't just ask permission, because "split a file that works" sounds like make-work unless you say why it matters:
-
-> "**Round two — splitting your [N] biggest screens (the [names], [X] and [Y] lines).** They work perfectly right now — this isn't a bug fix. But each does everything in one file, so when your developer needs to change one, they read the whole thing to find the 20 lines that matter, and every edit risks breaking something unrelated. That's the friction that makes a dev say 'this'll take a while' instead of 'yeah, I can ship this.' Splitting them is the riskiest change (restructuring working code), so I do it as its own pass and verify each screen in the browser. **Say 'go' and I'll finish it.**"
+6b. **Then hand off to round two with a reflexive prompt.** This is the ONE legitimate stop. It is NOT a menu (not a list, not "if you want, next I'll…"). It's a single clearly-bounded item with a reason, phrased so continuing is the expected default. Make the *case* — don't just ask permission, because "split a file that works" sounds like make-work unless you say why it matters:
+   > "**Round two — splitting your [N] biggest screens (the [names], [X] and [Y] lines).** They work perfectly right now — this isn't a bug fix. But each does everything in one file, so when your developer needs to change one, they read the whole thing to find the 20 lines that matter, and every edit risks breaking something unrelated. That's the friction that makes a dev say 'this'll take a while' instead of 'yeah, I can ship this.' Splitting them is the riskiest change (restructuring working code), so I do it as its own pass and verify each screen in the browser. **Say 'go' and I'll finish it.**"
 
 7. **On "go" (round two):** split the god-components one at a time, verifying each in the browser/runtime before the next. **Only split files that passed the reachability scan** — orphaned god-components stay untouched regardless of their size. This is the highest-breakage-risk work — go carefully, never batch it. When done, report and remind the designer to click through their screens.
 
    **The safe split method — move text, never reconstruct or slice it.** A split is pure relocation: an already-working block moves to a new file unchanged, and the only new code is its `export` and the import that points back. Follow this exactly:
-   - **Read the whole file first.** You cannot safely split what you haven't fully read. Identify _self-contained_ units — a presentational sub-component, a helper, a type — whose complete boundaries you can see and whose dependencies (props, imports, helpers it references) you know.
+   - **Read the whole file first.** You cannot safely split what you haven't fully read. Identify *self-contained* units — a presentational sub-component, a helper, a type — whose complete boundaries you can see and whose dependencies (props, imports, helpers it references) you know.
    - **Extract ONE unit at a time, build after each.** Never batch extractions — batching is where state gets confused ("did I already wire this one?"), the exact ambiguity that precedes a double-definition or a missed removal. One unit → build → next.
-   - **Each move is three exact-match edits:** (a) create the new file with the unit's body copied _verbatim_ plus `export` plus the imports that unit needs; (b) delete the original definition via an exact-match `str_replace` on the full block (matching the real opening and closing braces); (c) add the import at the top of the shell. If the block is too large to match as one exact string, that's a signal it isn't cleanly self-contained — don't force it.
+   - **Each move is three exact-match edits:** (a) create the new file with the unit's body copied *verbatim* plus `export` plus the imports that unit needs; (b) delete the original definition via an exact-match `str_replace` on the full block (matching the real opening and closing braces); (c) add the import at the top of the shell. If the block is too large to match as one exact string, that's a signal it isn't cleanly self-contained — don't force it.
    - **NEVER slice file regions with regex, line-ranges, `sed` ranges, or Python string surgery.** This is the single biggest corruption source: one unexpected brace, comment, or nested function and the boundary match is wrong, producing a file that looks plausible but is subtly broken. (A real run used a Python `re.search` DOTALL slice and only avoided corruption by luck, then had to fix a dangling import the slice left behind.)
-   - **Check both sides resolve after each removal.** Before removing a unit, note everything it references and everything that references _it_ — a moved sub-component often used a type or helper that stays behind (the dangling `Message` import bug). Make sure the new file imports what it needs and the shell no longer references what left.
+   - **Check both sides resolve after each removal.** Before removing a unit, note everything it references and everything that references *it* — a moved sub-component often used a type or helper that stays behind (the dangling `Message` import bug). Make sure the new file imports what it needs and the shell no longer references what left.
    - **Split by responsibility, not line count.** Extract the pieces that come out clean — self-contained sub-components, helpers, types — and STOP. Do not force a deeply-entangled core apart just to hit a line target: a sub-component reading six pieces of parent state means threading six props, which is a rewrite, not a move. A 656-line cohesive orchestrating shell is a fine outcome; a "split" that introduced a subtle bug is not. The goal is "a developer can find the piece they need," not "no file exceeds N lines."
    - **End with a browser check of the split screens specifically.** Build-passing only proves types align — it does not prove the screen still renders or behaves identically. A split can compile and still have dropped a prop, a piece of state, or an effect. Click through the actual screens that were split; confirm identical behavior before declaring done.
    - **Close with a short plain-language summary.** Don't end on a bare file-count table. One or two sentences in the designer's terms: which screens were split, that they look and behave exactly the same, and that they're now easier for a developer to extend — then the one reminder to click through and confirm. Example: "Your two biggest screens (the presentation flow and stock view) are now broken into focused pieces — same look, same behavior, but a developer can find and change one part without wading through the whole file. Open them in the browser and click through to confirm they feel identical."
@@ -793,7 +754,6 @@ This is explicit authorization to fix everything — even if it takes two rounds
 **Why round two exists:** not because the agent can't do the work, and not as a menu in disguise — but because splitting huge files is where runtime breaks hide, and doing it as its own verified pass (rather than hastily at the tail of a long, context-degraded run) is what protects the designer's app. The "say go" prompt makes continuing effortless — one reflexive word, not a decision.
 
 **Never, in Path 1, produce any of these (they are all the forbidden menu):**
-
 - A numbered list of remaining tasks
 - "What remains: …"
 - "If you want, next I'll…"
@@ -841,7 +801,6 @@ For a designer who can't read code, that browser click-through is the real test.
 **Never edit an orphaned file.** Before doing ANY work on a file — splitting, type fixes, icon replacement, anything — check whether that file is actually imported by another file in the app. Designers vibecode many screen variants; Figma Make exports generate files for every variant in the Figma file. Orphaned variants are normal and expected. Editing them is wasted credits. `grep -r "import.*ComponentName" src/` takes seconds and can save hundreds of credits. This applies to both Category A and Category B work, in both Path 1 and Path 2.
 
 **Avoid over-engineering. "Fix it all" means fix every finding well — not apply every possible change maximally.** Use judgment:
-
 - Split god-components by concern (Category B, round two), but don't decompose files that are already cohesive
 - Target fixed widths that genuinely break responsive layout; leave acceptable micro-constraints
 - Fix data flow before routing — data boundary cleanup gives bigger handoff value
@@ -858,23 +817,13 @@ Trigger: `/vibe-to-prod start` (or the user says "start", "new project", "set me
 
 For a designer starting completely fresh. No questions about stack — the answer is always **Vite + React + TypeScript**. The decision is made for them so there's zero friction.
 
-**Pre-flight:** Run `node --version` first. If Node.js is missing, stop and direct the designer to install it (see pre-flight section at top of this file). Everything in start mode — skill installation, scaffolding, dev server — requires Node. If a skill install fails for other reasons (network, repo unavailable), note which one failed and continue with the rest rather than halting.
+**Pre-flight:** Run `node --version` first. If Node.js is missing, stop and direct the designer to install it (see pre-flight section at top of this file). Everything in start mode — scaffolding, dev server — requires Node.
 
-**Step 1 — install the companion skills.** These give the agent best-practice knowledge for the build. Run each (the `-y` flag skips prompts):
+**Step 1 — scaffold.** Read `references/scaffold.md` and follow Path A (Vite + React + TypeScript). This sets up the project with shadcn/ui as the component library, since the production conventions in this skill assume it. Don't ask about the stack; only switch to Next.js if the user explicitly requests it.
 
-```bash
-npx skills add jakubkrehel/make-interfaces-feel-better -y
-npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-react-best-practices -y
-npx skills add https://github.com/anthropics/skills --skill frontend-design -y
-npx skills add https://github.com/vercel-labs/agent-skills --skill vercel-composition-patterns -y
-npx skills add https://github.com/shadcn/ui --skill shadcn -y
-```
+**Step 2 — write the project files.** Create `guidelines.md` and `design.md` in the project root (see "Project files" section below). guidelines.md gives the agent code conventions; design.md gives it the design system. Together they keep every future feature production-ready and visually consistent.
 
-**Step 2 — scaffold.** Read `references/scaffold.md` and follow Path A (Vite + React + TypeScript). Don't ask about the stack; only switch to Next.js if the user explicitly requests it.
-
-**Step 3 — write the project files.** Create `guidelines.md` and `design.md` in the project root (see "Project files" section below). guidelines.md gives the agent code conventions; design.md gives it the design system. Together they keep every future feature production-ready and visually consistent.
-
-After start, the designer has a production-ready skeleton, the right skills installed, and both files their agent will follow as they build.
+After start, the designer has a production-ready skeleton and both files their agent will follow as they build.
 
 ```
 /vibe-to-prod start
@@ -943,7 +892,6 @@ In **every mode** — start, scaffold, audit, refactor, quick — write a `guide
 Also in every mode, ensure a `design.md` exists at the project root. This is the designer's document — written in design language, not code. It's structured so an agent can build new on-brand pages without seeing existing code.
 
 A complete design.md has these sections (the full fillable template is in `references/design-md-template.md` — use it as the basis):
-
 1. **Overview** — the brand feel, positioning, key characteristics
 2. **Colors** — grouped by role (brand, surface, text, semantic), each with `{token.name}`, hex, and a usage note
 3. **Typography** — families (display/body/mono), hierarchy table, principles
