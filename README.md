@@ -42,7 +42,7 @@ The result: your developer skips the UI rebuild — often weeks of it — and st
 vibe-to-prod is an [agentskills.io](https://agentskills.io)-compatible skill. It works with Claude Code, OpenAI Codex, Cursor, GitHub Copilot, and other compatible agents.
 
 ```bash
-npx skills add Manish-UXUI/vibe-to-prod
+npx skills add manish-uxai/vibe-to-prod
 ```
 
 You'll need [Node.js](https://nodejs.org) installed. If you don't have it, the skill will detect that and walk you through installing it.
